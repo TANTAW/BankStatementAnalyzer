@@ -17,26 +17,18 @@ public class BankTransactionAnalyzerSimple {
         final List<String> lines = Files.readAllLines(path);
         BankStatementCSVParser parser = new BankStatementCSVParser();
         List<BankTransaction> transactions = parser.parseLinesFromCSV(lines);
+        BankStatementProcessor bankStatementProcessor = new BankStatementProcessor(transactions);
 
-        System.out.println("The total for all transactions is " + calculateTotalAmount(transactions));
-        System.out.println("The total transactions for JANUARY is " + selectInMonth(transactions, Month.JANUARY));
+        collectSummary(bankStatementProcessor);
+
     }
 
-    private static List<BankTransaction> selectInMonth(List<BankTransaction> transactions, Month month) {
-        List<BankTransaction> transactionsPerMonth = new ArrayList<>();
-        for (BankTransaction transaction : transactions) {
-            if (transaction.date().getMonth() == month){
-                transactionsPerMonth.add(transaction);
-            }
-        }
-        return transactionsPerMonth;
+    private static void collectSummary(BankStatementProcessor bankStatementProcessor) {
+        System.out.println("The total for all transactions is " + bankStatementProcessor.calculateTotalAmount());
+        System.out.println("The total transactions for JANUARY is " + bankStatementProcessor.selectInMonth(Month.JANUARY));
+        System.out.println("The total transactions for FEBRUARY is " + bankStatementProcessor.selectInMonth(Month.FEBRUARY));
+        System.out.println("The total salary received is " + bankStatementProcessor.calculateTotalAmountForCategory("Salary"));
     }
 
-    private static double calculateTotalAmount(List<BankTransaction> transactions) {
-        double total = 0d;
-        for (BankTransaction transaction : transactions) {
-            total += transaction.amount();
-        }
-        return total;
-    }
+
 }
